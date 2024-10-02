@@ -1,11 +1,11 @@
 import { FunctionComponent, useMemo, useEffect } from 'react';
-import { Product } from './services/productEntity';
-import { ProductList } from './components/ProductList';
-import { useAppDispatch, useAppSelector, reducers, queries, mutation } from "./services/dataStore";
+import { Book } from './service/bookEntity';
+import { BookList } from './component/BookList';
+import { useAppDispatch, useAppSelector, reducers, queries, mutation } from "./service/dataStore";
 import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
-import { OrderDetails } from './components/OrderDetails';
-import { OrderSummary } from "./components/OrderSummary";
-import { WalletAPI } from './apis/walletApi';
+import { OrderDetails } from './component/OrderDetails';
+import { OrderSummary } from "./component/OrderSummary";
+import { WalletAPI } from './api/walletApi';
 
 /**
  * App
@@ -21,9 +21,9 @@ export const App: FunctionComponent = () => {
     const selections = useAppSelector(state => state.selections); //Read selections data from the data store.
      
     const dispatch = useAppDispatch();
-    const { data, } = queries.useGetProductsQuery();
-    const addToOrder = (p: Product, q: number) => dispatch(reducers.addToOrder([p, q]));//Invoke addToOrder action to dispatch to store.
-    const categories = useMemo<string[]>(() => { return [...new Set(data?.map(p => p.category))]}, [data]);
+    const { data, } = queries.useGetBooksQuery();
+    const addToOrder = (b: Book, q: number) => dispatch(reducers.addToOrder([b, q]));//Invoke addToOrder action to dispatch to store.
+    const categories = useMemo<string[]>(() => { return [...new Set(data?.map(b => b.category))]}, [data]);
 
     useEffect(() => {
         if (selections.length > 0) {
@@ -58,7 +58,7 @@ export const App: FunctionComponent = () => {
 
     const orderDetailsRevokeCallback = async (action: string) => {
       if (action === 'Back') {
-        navigate('/products');
+        navigate('/books');
 
       } else if (action === 'Disconnect Wallet') {
 
@@ -71,10 +71,10 @@ export const App: FunctionComponent = () => {
     return <div className="App">
             <Routes>
                 <Route path="/" element={
-                    <Navigate replace to="/products" />
+                    <Navigate replace to="/books" />
                 } />
-                <Route path="/products" element={
-                    <ProductList products={ data ?? [] } 
+                <Route path="/books" element={
+                    <BookList books={ data ?? [] } 
                         categories={categories } 
                         selections={ selections }
                         addToOrder= { addToOrder } />

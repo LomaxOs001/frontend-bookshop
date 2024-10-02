@@ -1,14 +1,14 @@
 import { FunctionComponent, useState } from "react";
 import { Header } from "./Header";
-import { ProductItem } from "./ProductItem";
+import { BookItem } from './BookItem';
 import { CategoryList} from "./CategoryList";
-import { Product, ProductSelection } from "../services/productEntity";
+import { Book, BookSelection } from "../service/bookEntity";
 
 interface Props {
-    products: Product[],
+    books: Book[],
     categories: string[],
-    selections: ProductSelection[],
-    addToOrder: (product: Product, quantity: number) => void
+    selections: BookSelection[],
+    addToOrder: (bookItem: Book, quantity: number) => void
 }
 
 /**
@@ -18,19 +18,19 @@ interface Props {
  * with "All" being the default selected category.
  * 
  * @param { object } props - The props object containing the following properties:
- * @prop { Product[] } props.product - An array containing list of products to display.
+ * @prop { Book[] } props.books - An array containing list of products to display.
  * @prop { string[] } props.categories - An array containing list of each product category.
- * @prop { ProductSelection[] } props.selections - An array of the selected products.
+ * @prop { BookSelection[] } props.selections - An array of the selected products.
  * @prop { function } props.addToOrder - A callback function invoked when the "Add To Cart" button is clicked.
  * 
  * @returns { JSX.Element } - A block of JSX elements that display the UI header, category list, and product items.
  */
 
-export const ProductList: FunctionComponent<Props> = (props) => {
+export const BookList: FunctionComponent<Props> = (props) => {
 
     const [selectedCategory, setSelectedCategory] = useState("All");
     
-    const products = props.products.filter(prod => selectedCategory === "All" || prod.category === selectedCategory);
+    const books = props.books.filter(book => selectedCategory === "All" || book.category === selectedCategory);
 
     return <div>
             <Header selections={ props.selections } />
@@ -49,9 +49,9 @@ export const ProductList: FunctionComponent<Props> = (props) => {
                     </div>
                     <div className="col-9 p-2">
                     {
-                        products.map(prod => <ProductItem 
+                        books.map(prod => <BookItem 
                             key={ prod.id } 
-                            product={ prod } 
+                            bookItem={ prod } 
                             callback={ props.addToOrder }
                             />)
                     }

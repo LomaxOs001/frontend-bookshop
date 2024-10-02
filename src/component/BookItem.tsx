@@ -1,9 +1,9 @@
 import { FunctionComponent, useState } from "react";
-import { Product } from "../services/productEntity";
+import { Book } from "../service/bookEntity";
 
 interface Props {
-    product: Product,
-    callback: (product: Product, quantity: number) => void 
+    bookItem: Book,
+    callback: (product: Book, quantity: number) => void 
 }
 
 /**
@@ -13,27 +13,27 @@ interface Props {
  * It allows the user to add the selected quantity of the product to the cart.
  * 
  * @param {object} props - The props object containing the following properties:
- * @prop {Product} props.product - The object containing product details.
+ * @prop {Product} props.bookItem - The object containing product details.
  * @prop {function} props.callback - A callback function invoked when the "Add To Cart" button is clicked.
  * 
  * @returns {JSX.Element} A card displaying product details, a quantity selector, and an "Add To Cart" button.
  */
 
-export const ProductItem: FunctionComponent<Props> = (props) => {
+export const BookItem: FunctionComponent<Props> = (props) => {
     
     const [quantity, setQuantity] = useState<number>(1);
 
     return <div className="card m-1 p-1 bg-light">
         <h4>
-            { props.product.name }
+            { props.bookItem.name }
             <span className="badge rounded-pill bg-primary float-end">
-                €{ props.product.price.toFixed(2) }
+                €{ props.bookItem.price.toFixed(2) }
             </span>
         </h4>
 
         <div className="card-text bg-white p-1">
-            { props.product.description }
-            <button className="btn btn-success btn-sm float-end" onClick={ () => props.callback(props.product, quantity) } >
+            { props.bookItem.description }
+            <button className="btn btn-success btn-sm float-end" onClick={ () => props.callback(props.bookItem, quantity) } >
                 Add To Cart
             </button>
 

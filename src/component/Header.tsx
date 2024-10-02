@@ -1,9 +1,9 @@
 import { FunctionComponent } from "react";
-import { ProductSelection, ProductSelectionHelpers } from "../services/productEntity";
+import { BookSelection, BookSelectionHelpers } from "../service/bookEntity";
 import { NavLink } from "react-router-dom";
 
 interface Props {
-    selections: ProductSelection[]
+    selections: BookSelection[]
 }
 /**
  * Header Component
@@ -11,14 +11,14 @@ interface Props {
  * A FunctionComponent that displays the total number and price of selected products.
  * 
  * @param {object} props - The props object containing the following properties:
- * @prop {ProductSelection[]} props.selections - An array of product selections, containing selected products and quantity.
+ * @prop {BookSelection[]} props.selections - An array of product selections, containing selected products and quantity.
  * 
  * @returns {JSX.Element} A summary of the number of selected products and the total price, along with a "Submit Order" button.
  */
 
 export const Header: FunctionComponent<Props> = (props) => {
-    const count = ProductSelectionHelpers.productCount(props.selections);
-    const total = ProductSelectionHelpers.total(props.selections);
+    const count = BookSelectionHelpers.bookCount(props.selections);
+    const total = BookSelectionHelpers.total(props.selections);
 
     return (
         <div className="p-1 bg-secondary text-white text-end">

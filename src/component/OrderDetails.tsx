@@ -1,10 +1,10 @@
 import { FunctionComponent, useState, useEffect } from "react";
-import {ProductSelection, ProductSelectionHelpers as Helpers } from "../services/productEntity";
+import {BookSelection, BookSelectionHelpers as Helpers } from "../service/bookEntity";
 import { NavLink } from "react-router-dom";
-import { WalletAPI } from "../apis/walletApi";
+import { WalletAPI } from "../api/walletApi";
 
 interface Props {
-    selections: ProductSelection[],
+    selections: BookSelection[],
     submitCallback: (action: string) => void,
     revokeCallback: (action: string) => void
 }
@@ -79,11 +79,11 @@ export const OrderDetails: FunctionComponent<Props> = (props) => {
                     <tbody>
                         { 
                             props.selections.map(selection =>
-                                <tr key={ selection.product.id }>
+                                <tr key={ selection.bookItem.id }>
                                     <td>{ selection.quantity }</td>
-                                    <td>{ selection.product.name }</td>
+                                    <td>{ selection.bookItem.name }</td>
                                     <td className="text-right">
-                                        ${ selection.product.price.toFixed(2) }
+                                        ${ selection.bookItem.price.toFixed(2) }
                                     </td>
                                     <td className="text-right">
                                         ${ Helpers.total([selection]).toFixed(2) }

@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
-import { Product, ProductSelection } from '../services/productEntity';
+import { Book, BookSelection } from '../service/bookEntity';
 
 const protocol = "http";
 const hostname = "localhost";
@@ -8,15 +8,15 @@ const port = 4600;
 const baseUrl = `${protocol}://${hostname}:${port}`;
 
 /**
- * @constant productsApi - An API slice for fetching products from the server.
+ * @constant booksApi - An API slice for fetching products from the server.
  */
 
-export const productsApi = createApi({
+export const booksApi = createApi({
 
     reducerPath: "productsApi",
     baseQuery: fetchBaseQuery({ baseUrl }),
     endpoints: (builder) => ({
-        getProducts: builder.query<Product[], void>({
+        getBooks: builder.query<Book[], void>({
             query: () => "products",
             }),
     }),
@@ -29,12 +29,12 @@ export const ordersApi = createApi({
     reducerPath: "orders",
     baseQuery: fetchBaseQuery({baseUrl}),
     endpoints: (builder) => ({
-        storeOrder: builder.mutation<number, ProductSelection[]>({
+        storeOrder: builder.mutation<number, BookSelection[]>({
             query(selections) {
                 let orderData = {
                     lines: selections.map(ol => ({
-                        productId: ol.product.id,
-                        productName: ol.product.name, 
+                        bookId: ol.bookItem.id,
+                        bookName: ol.bookItem.name, 
                         quantity: ol.quantity
                     }))
                 } 
@@ -49,5 +49,5 @@ export const ordersApi = createApi({
     }),
 })
 
-export const { useGetProductsQuery } = productsApi;
+export const {  useGetBooksQuery } = booksApi;
 export const { useStoreOrderMutation } = ordersApi;
