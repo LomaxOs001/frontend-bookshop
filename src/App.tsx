@@ -1,7 +1,8 @@
 import { FunctionComponent, useMemo, useEffect } from 'react';
 import { Book } from './service/bookEntity';
 import { BookList } from './component/BookList';
-import { useAppDispatch, useAppSelector, reducers, queries, mutation } from "./service/dataStore";
+import { useAppDispatch, useAppSelector, reducers } from "./service/dataStore";
+import { useGetBooksQuery, useStoreOrderMutation } from './api/storeApi';
 import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import { OrderDetails } from './component/OrderDetails';
 import { OrderSummary } from "./component/OrderSummary";
@@ -19,11 +20,11 @@ export const App: FunctionComponent = () => {
 
    
     const selections = useAppSelector(state => state.selections); //Read selections data from the data store.
-     
     const dispatch = useAppDispatch();
-    const { data, } = queries.useGetBooksQuery();
-    const addToOrder = (b: Book, q: number) => dispatch(reducers.addToOrder([b, q]));//Invoke addToOrder action to dispatch to store.
-    const categories = useMemo<string[]>(() => { return [...new Set(data?.map(b => b.category))]}, [data]);
+    const addToOrder = (b: Book, q: number) => dispatch(reducers.addToOrder([b, q]));
+
+    const { data: queriedBooks } = useGetBooksQuery();
+    const categories = useMemo<string[]>(() => { return [...new Set(queriedBooks?.map(b => b.category))]}, [queriedBooks]);
 
     useEffect(() => {
         if (selections.length > 0) {
@@ -34,12 +35,13 @@ export const App: FunctionComponent = () => {
       //rehydrate selections from localStorage
     useEffect(() => {
       const storedSelections = localStorage.getItem('selections');
-      if (storedSelections) {
+
+      if (storedSelections !== null) {
         dispatch(reducers.setSelections(JSON.parse(storedSelections))); //Invoke setSelections action to dispatch to store.
       }
     }, [dispatch]);
 
-    const [ storeOrder ] = mutation.useStoreOrderMutation();
+    const [ storeOrder ] = useStoreOrderMutation();
     const navigate = useNavigate();
 
     const orderDetailsSubmitCallback = async (action: string) => {
@@ -58,7 +60,7 @@ export const App: FunctionComponent = () => {
 
     const orderDetailsRevokeCallback = async (action: string) => {
       if (action === 'Back') {
-        navigate('/books');
+        navigate('/');
 
       } else if (action === 'Disconnect Wallet') {
 
@@ -74,7 +76,7 @@ export const App: FunctionComponent = () => {
                     <Navigate replace to="/books" />
                 } />
                 <Route path="/books" element={
-                    <BookList books={ data ?? [] } 
+                    <BookList books={ queriedBooks ?? [] } 
                         categories={categories } 
                         selections={ selections }
                         addToOrder= { addToOrder } />

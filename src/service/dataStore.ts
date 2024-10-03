@@ -1,7 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { selectionReducer, addToOrder, setSelections, resetSelections } from './selectionSlice';
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
-import { booksApi, ordersApi, useGetBooksQuery, useStoreOrderMutation } from "../api/storeApi";
+import { booksApi, ordersApi } from "../api/storeApi";
 
 /**
  * Data Store Configuration that consumes the features created by the slice and store api, exported to
@@ -24,5 +24,3 @@ export type RootState = ReturnType<typeof dataStore.getState>;
 export const useAppDispatch = () => useDispatch<AppDispatch>();
 export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
 export const reducers = { addToOrder, setSelections, resetSelections};
-export const queries = { useGetBooksQuery };
-export const mutation = { useStoreOrderMutation};

@@ -13,7 +13,7 @@ interface Props {
  * It allows the user to add the selected quantity of the product to the cart.
  * 
  * @param {object} props - The props object containing the following properties:
- * @prop {Product} props.bookItem - The object containing product details.
+ * @prop {Book} props.bookItem - The object containing product details.
  * @prop {function} props.callback - A callback function invoked when the "Add To Cart" button is clicked.
  * 
  * @returns {JSX.Element} A card displaying product details, a quantity selector, and an "Add To Cart" button.

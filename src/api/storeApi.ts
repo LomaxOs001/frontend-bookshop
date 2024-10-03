@@ -4,11 +4,10 @@ import { Book, BookSelection } from '../service/bookEntity';
 const protocol = "http";
 const hostname = "localhost";
 const port = 4600;
-//const baseUrl = '/api';
-const baseUrl = `${protocol}://${hostname}:${port}`;
+const baseUrl = `${protocol}://${hostname}:${port}/api`;
 
 /**
- * @constant booksApi - An API slice for fetching products from the server.
+ * @constant booksApi - An API slice for fetching books from the server.
  */
 
 export const booksApi = createApi({
@@ -17,7 +16,8 @@ export const booksApi = createApi({
     baseQuery: fetchBaseQuery({ baseUrl }),
     endpoints: (builder) => ({
         getBooks: builder.query<Book[], void>({
-            query: () => "products",
+            query: () => "/books",
+            
             }),
     }),
 })
@@ -39,7 +39,7 @@ export const ordersApi = createApi({
                     }))
                 } 
                 return {
-                    url: "orders",
+                    url: "/orders",
                     method: "POST",
                     body: {orderData}
                 }

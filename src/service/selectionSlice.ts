@@ -3,13 +3,13 @@ import { Book, BookSelection, BookSelectionMutations } from "./bookEntity";
 
 
 /**
- * productSelectionSlice
+ * bookSelectionSlice
  * 
- * A Redux slice for managing product selections in an order.
- * It contains the state and reducer logic for adding products to the order.
+ * A Redux slice for managing book selections in an order.
+ * It contains the state and reducer logic for adding books to the order.
  * 
  * @prop {string} name - The name of the slice.
- * @prop {BookSelection[]} initialState - The initial state of the slice, an array of product selections.
+ * @prop {BookSelection[]} initialState - The initial state of the slice, an array of book selections.
  * @prop {object} reducers - An object containing the reducer functions for handling actions.
  */
 const bookSelectionSlice = createSlice({
@@ -20,12 +20,12 @@ const bookSelectionSlice = createSlice({
         /**
          * addToOrder
          * 
-         * A reducer function that adds a product and its quantity to the product selections.
+         * A reducer function that adds a book and its quantity to the book selections.
          * 
-         * @param {BookSelection[]} currSelections - Current state of product selections.
-         * @param {PayloadAction<[Book, number]>} action - Action containing the product to add and the quantity.
+         * @param {BookSelection[]} currSelections - Current state of book selections.
+         * @param {PayloadAction<[Book, number]>} action - Action containing the book to add and the quantity.
          * 
-         * The reducer calls this function to modify the selections array by adding the product with the specified quantity.
+         * The reducer calls this function to modify the selections array by adding the book with the specified quantity.
          */
         addToOrder(currSelections: BookSelection[], action: PayloadAction<[Book, number]>) {
             BookSelectionMutations.addBook(currSelections, action.payload[0], action.payload[1]);
@@ -33,9 +33,9 @@ const bookSelectionSlice = createSlice({
         /**
          * setSelections
          * 
-         * A reducer function that sets the product selections to a new array of selections.
+         * A reducer function that sets the book selections to a new array of selections.
          * 
-         * @param {BookSelection[]} curr - Current state of product selections.
+         * @param {BookSelection[]} curr - Current state of book selections.
          * @param {PayloadAction<BookSelection[]>} action - Action containing the new selections array.
          * 
          * The reducer calls this function to modify the selections array by setting it to the new array of selections.
@@ -46,9 +46,9 @@ const bookSelectionSlice = createSlice({
         /**
          * resetSelections
          * 
-         * A reducer function that resets the product selections to an empty array.
+         * A reducer function that resets the book selections to an empty array.
          * 
-         * @param {BookSelection[]} selections - Current state of product selections. 
+         * @param {BookSelection[]} selections - Current state of book selections. 
          */
         resetSelections(selections: BookSelection[]) {
             selections.length = 0;

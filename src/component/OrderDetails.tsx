@@ -105,7 +105,7 @@ export const OrderDetails: FunctionComponent<Props> = (props) => {
                     
                     <button  className="btn btn-secondary" style={{minWidth: "80px"}} onClick={ () => props.revokeCallback(secondaryOrderButtonText) }> 
 
-                        <NavLink to="/products" style={{color:"white", textDecoration:"none"}}> 
+                        <NavLink to="/books" style={{color:"white", textDecoration:"none"}}> 
                             { secondaryOrderButtonText } 
                         </NavLink>
                     </button>

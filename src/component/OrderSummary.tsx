@@ -22,7 +22,7 @@ export const OrderSummary : FunctionComponent = () => {
         <p>Your order is #{ id }</p>
         <p>We'll ship your goods as soon as possible.</p>
         <button className="btn btn-secondary" onClick={ cleanUp }>
-            <NavLink to="/products" style={{color:"white", textDecoration:"none"}}>OK</NavLink>
+            <NavLink to="/books" style={{color:"white", textDecoration:"none"}}>OK</NavLink>
         </button>
     </div>
 }
