@@ -31,13 +31,16 @@ export const ordersApi = createApi({
     endpoints: (builder) => ({
         storeOrder: builder.mutation<number, BookSelection[]>({
             query(selections) {
-                let orderData = {
-                    lines: selections.map(ol => ({
-                        bookId: ol.bookItem.id,
-                        bookName: ol.bookItem.name, 
-                        quantity: ol.quantity
-                    }))
-                } 
+                let orderData = selections.map(bo => ({
+                        orderId: bo.bookItem.id,
+                        orders:[{
+                            bookAuthor: bo.bookItem.author,
+                            bookName: bo.bookItem.name, 
+                            quantity: bo.quantity
+                        }]
+                        
+                    }));
+                
                 return {
                     url: "/orders",
                     method: "POST",
