@@ -18,13 +18,15 @@ import { WalletAPI } from './api/walletApi';
 
 export const App: FunctionComponent = () => {
 
-   
+
+    const { data: queriedBooks } = useGetBooksQuery();
+    const categories = useMemo<string[]>(() => { return [...new Set(queriedBooks?.map(b => b.category))]}, [queriedBooks]);
+
     const selections = useAppSelector(state => state.selections); //Read selections data from the data store.
     const dispatch = useAppDispatch();
     const addToOrder = (b: Book, q: number) => dispatch(reducers.addToOrder([b, q]));
 
-    const { data: queriedBooks } = useGetBooksQuery();
-    const categories = useMemo<string[]>(() => { return [...new Set(queriedBooks?.map(b => b.category))]}, [queriedBooks]);
+    
 
     useEffect(() => {
         if (selections.length > 0) {
@@ -52,8 +54,11 @@ export const App: FunctionComponent = () => {
       } else if (action === 'Submit Order') {
         storeOrder(selections)
             .unwrap()
-            .then((id) => { 
-            navigate(`/summary/${id}`); 
+            .then((orderId) => { 
+            navigate(`/summary/${orderId.length}`); 
+            })
+            .catch((error) => {
+              console.error("Order submission failed:", error);  
             });
       }  
     };

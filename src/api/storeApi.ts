@@ -1,5 +1,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 import { Book, BookSelection } from '../service/bookEntity';
+import { v4 as uuidv4 } from 'uuid';
 
 const protocol = "http";
 const hostname = "localhost";
@@ -21,18 +22,17 @@ export const booksApi = createApi({
             }),
     }),
 })
-
 /**
  * @constant ordersApi - An API slice for storing orders on the server.
  */
 export const ordersApi = createApi({
-    reducerPath: "orders",
+    reducerPath: "ordersApi",
     baseQuery: fetchBaseQuery({baseUrl}),
     endpoints: (builder) => ({
-        storeOrder: builder.mutation<number, BookSelection[]>({
+        storeOrder: builder.mutation<string[], BookSelection[]>({
             query(selections) {
                 let orderData = selections.map(bo => ({
-                        orderId: bo.bookItem.id,
+                        orderId: uuidv4()+'-'+bo.bookItem.id,
                         orders:[{
                             bookAuthor: bo.bookItem.author,
                             bookName: bo.bookItem.name, 
@@ -47,7 +47,7 @@ export const ordersApi = createApi({
                     body: {orderData}
                 }
         },
-            transformResponse: ((response: {id : number}) => response.id),//Extract the order id prior to hit the cache.
+            transformResponse: ((response: {orderId : string[]}) => response.orderId),//Extract the order id prior to hit the cache.
         }), 
     }),
 })

@@ -1,28 +1,31 @@
-
+import { ethers } from "ethers";
 /**
  * Wallet API
  */
 
 
 export class WalletAPI {
+    
+    static currentInfo: {account: string, balance: string}[] = [{account: '', balance: '-'}];
+
     static async connectWallet(): Promise<void> {
         //Simulate a connection to a wallet
         if (this.checkWindow()) {
 
             try {
-                const account = await window.ethereum.request({ method: 'eth_requestAccounts' });
-                console.log("Wallet Connected with: ", account);
+                await window.ethereum.request({ method: 'eth_requestAccounts' });
+                console.log("Wallet Connected");
             }
             catch (e) {
-                window.alert("Wallet is not installed yet: ");
+                throw new Error("No Wallet Installed");
             }
         }
         else 
-            window.alert("Wallet is not installed yet: ");
+            throw new Error("No Wallet Installed");
            
     }
     static async disconnectWallet(): Promise<void> {
-        //Simulate a disconnection from a wallet
+
         if (this.checkWindow()) {
             try {
                 await window.ethereum.request({ 
@@ -37,44 +40,47 @@ export class WalletAPI {
             }
         }
         else {
-            console.log("No ethereum object found");
+            throw new Error("Can't Disconnect - No Wallet Installed");
         }
     }
-    
-    //fetch account information from the connected wallet
-    static async getAddresses(): Promise<string[]> {
+    static async fetchAccountInfo(): Promise<void> {
 
         if (this.checkWindow()) {
-            try {
-                const walletAddresses = await window.ethereum.request({ method: 'eth_accounts' });
-                return walletAddresses;
-            }
-            catch (e) {
-                console.log("Error getting accounts: ", e);
-                return [];
-            }
-        }
-        else {
-            console.log("No ethereum object found");
-            return [];
-        }
-    }
-
-    static async walletListener(): Promise<string> {
-        
-        if (this.checkWindow()) {
-            return new Promise((resolve) => {
-                window.ethereum.on('accountsChanged', (accounts: string[]) => {
-                    console.log("Accounts Changed: ", accounts);
-                    resolve(accounts[0]);
-                });
+            const addresses = await window.ethereum
+            .request({ method: 'eth_requestAccounts' })
+            .then()
+            .catch((error: unknown) => {
+                console.error("Error fetching accounts:", error);
             });
-        } else {
-            console.log("No ethereum object found");
-            return '';
+            if ( addresses.length > 0 ) {
+                this.currentInfo[0].account = addresses[0];
+                this.currentInfo[0].balance = await this.getAccountBalance(addresses[0]);
+            }
+            else {
+                throw new Error("Not Account Connected");
+            }
+        }
+        else{
+            throw new Error("No Wallet Installed");
         }
     }
 
+    private static async getAccountBalance(address: string): Promise<string> {
+        try {
+            const balance = await window.ethereum.request({ method: 'eth_getBalance', params: [address, 'latest'] }); 
+            
+            return ethers.formatEther(balance);
+        } catch (error) {
+            console.error("Error fetching balance:", error);
+            return '';
+        }  
+    }
+
+    static getCurrentInfo(): {account: string, balance: string}[] {
+        return this.currentInfo;
+    }
+
+    
     private static checkWindow(): boolean {
         return typeof window != 'undefined' && typeof window.ethereum != 'undefined';
     }

@@ -29,21 +29,29 @@ export const OrderDetails: FunctionComponent<Props> = (props) => {
     let backButtonText = 'Back';
     let disconnectButtonText = 'Disconnect Wallet';
 
-    const [primaryOrderButtonText, setPrimaryButtonText] = useState<string>(connectButtonText);
-    const [secondaryOrderButtonText, setSecondaryButtonText] = useState<string>(backButtonText);
+    const [ primaryOrderButtonText, setPrimaryButtonText ] = useState<string>(connectButtonText);
+    const [ secondaryOrderButtonText, setSecondaryButtonText ] = useState<string>(backButtonText);
     const [ account, setAccount ] = useState<string>('');
+    const [ balance, setAccountBalance ] = useState<string>('');
 
     useEffect(() => {
 
         const fetchWalletAccount = async () => {
-            const walletAddresses = await WalletAPI.getAddresses();
 
-            if (walletAddresses.length > 0) {
-                setAccount(walletAddresses[0].substring(0, 6) + '...' + walletAddresses[0].substring(walletAddresses[0].length - 5));
-                setPrimaryButtonText(orderButtonText);
-                setSecondaryButtonText(disconnectButtonText);
-            }
-            else{
+            await WalletAPI.fetchAccountInfo();
+
+            const walletAccountInfo = WalletAPI.getCurrentInfo();
+
+            if (walletAccountInfo.length > 0) {
+                const accountInfo = walletAccountInfo[0];
+                setAccountBalance(accountInfo.balance?.toString());
+
+                if (accountInfo.account !== '') {
+                    setAccount(accountInfo.account.substring(0, 6) + '...' + accountInfo.account.substring(accountInfo.account.length - 5));
+                    setPrimaryButtonText(orderButtonText);
+                    setSecondaryButtonText(disconnectButtonText);
+                }
+            } else {
                 setPrimaryButtonText(connectButtonText);
                 setSecondaryButtonText(backButtonText);
             }
@@ -57,7 +65,7 @@ export const OrderDetails: FunctionComponent<Props> = (props) => {
                 <div className="bg-primary row">
                     <div className="col text-start">
                         <h5 className="text-white" >Account: <span>{ account }</span></h5>
-                        <h5 className="text-white" >Balance: <span></span></h5>
+                        <h5 className="text-white" >Balance: <span>{ balance }</span></h5>
                     </div>
                     
                         <h3 className="text-center text-white p-2 border">
