@@ -60,12 +60,30 @@ export const OrderDetails: FunctionComponent<Props> = (props) => {
         
     });
 
-    return <div>
+    return <div className="OrderDetails">
             <div>
                 <div className="bg-primary row">
                     <div className="col text-start">
-                        <h5 className="text-white" >Account: <span>{ account }</span></h5>
-                        <h5 className="text-white" >Balance: <span>{ balance }</span></h5>
+                        <h5 className="text-white mt-3">
+                            Account: 
+                            <span className="WalletAccountInfo bg-info text-dark rounded">{account}</span>
+                            </h5>
+                            <h5 className="text-white">
+                            Balance: 
+                            <span className="WalletAccountInfo bg-info text-dark rounded d-inline-block">{balance}</span>
+                        </h5>
+                        <style>{`
+                            .WalletAccountInfo {
+                                background: linear-gradient(90deg, #87CEEB, #00BFFF); 
+                                width: auto; 
+                                height: 30px;
+                                padding-left: 5px;
+                                padding-right: 5px; 
+                                text-align: center;
+                                border-radius: 0.25rem;
+                                display: inline-block;
+                            }
+                        `}</style>
                     </div>
                     
                         <h3 className="text-center text-white p-2 border">
