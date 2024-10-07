@@ -9,7 +9,7 @@ interface Props {
 /**
  * CategoryList Component
  * 
- * A FunctionComponent that renders a list of product categories as buttons, allowing the user to select one.
+ * A FunctionComponent that renders a list of book categories as buttons, allowing the user to select one.
  * The "All" category is always included at the beginning of the list.
  * 
  * @param {object} props - The props object containing the following properties:

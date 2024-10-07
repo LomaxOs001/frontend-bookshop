@@ -6,24 +6,55 @@ import { ethers } from "ethers";
 
 export class WalletAPI {
     
-    static currentInfo: {account: string, balance: string}[] = [{account: '', balance: '-'}];
+    static currentInfo: {account: string, balance: string}[] = [{account: '', balance: ''}];
 
-    static async connectWallet(): Promise<void> {
-        //Simulate a connection to a wallet
+    static async connectWalletAccount(): Promise<void> {
+
         if (this.checkWindow()) {
+            await window.ethereum.request({ method: 'eth_requestAccounts' });
+        }
+        else{
+            throw new Error("No Wallet Installed");
+        }
+    }
 
-            try {
-                await window.ethereum.request({ method: 'eth_requestAccounts' });
-                console.log("Wallet Connected");
+    static async getAccountInfo(): Promise<{account: string, balance: string}[]> {
+
+        if (this.checkWindow()) {
+            const addresses = await window.ethereum
+            .request({ method: 'eth_accounts' })
+            .then()
+            .catch((error: unknown) => {
+                console.error("Error fetching accounts:", error);
+            });
+
+            if ( addresses.length > 0 ) {
+                this.currentInfo[0].account = addresses[0];
+                this.currentInfo[0].balance = await this.getAccountBalance(addresses[0]);
+                return this.currentInfo;
             }
-            catch (e) {
-                throw new Error("No Wallet Installed");
+            else {
+                return [];
             }
         }
-        else 
-            throw new Error("No Wallet Installed");
-           
+        else{
+            throw new Error("No Wallet Installed!");
+        }
+
     }
+
+    private static async getAccountBalance(address: string): Promise<string> {
+        try {
+            const balance = await window.ethereum.request({ method: 'eth_getBalance', params: [address, 'latest'] }); 
+            
+            return ethers.formatEther(balance);
+        } catch (error) {
+            console.error("Error fetching balance:", error);
+            return '';
+        }  
+    }
+
+
     static async disconnectWallet(): Promise<void> {
 
         if (this.checkWindow()) {
@@ -43,43 +74,6 @@ export class WalletAPI {
             throw new Error("Can't Disconnect - No Wallet Installed");
         }
     }
-    static async fetchAccountInfo(): Promise<void> {
-
-        if (this.checkWindow()) {
-            const addresses = await window.ethereum
-            .request({ method: 'eth_requestAccounts' })
-            .then()
-            .catch((error: unknown) => {
-                console.error("Error fetching accounts:", error);
-            });
-            if ( addresses.length > 0 ) {
-                this.currentInfo[0].account = addresses[0];
-                this.currentInfo[0].balance = await this.getAccountBalance(addresses[0]);
-            }
-            else {
-                throw new Error("Not Account Connected");
-            }
-        }
-        else{
-            throw new Error("No Wallet Installed");
-        }
-    }
-
-    private static async getAccountBalance(address: string): Promise<string> {
-        try {
-            const balance = await window.ethereum.request({ method: 'eth_getBalance', params: [address, 'latest'] }); 
-            
-            return ethers.formatEther(balance);
-        } catch (error) {
-            console.error("Error fetching balance:", error);
-            return '';
-        }  
-    }
-
-    static getCurrentInfo(): {account: string, balance: string}[] {
-        return this.currentInfo;
-    }
-
     
     private static checkWindow(): boolean {
         return typeof window != 'undefined' && typeof window.ethereum != 'undefined';

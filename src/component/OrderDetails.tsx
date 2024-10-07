@@ -2,14 +2,14 @@ import { FunctionComponent, useState, useEffect } from "react";
 import {BookSelection, BookSelectionHelpers as Helpers } from "../service/bookEntity";
 import { NavLink } from "react-router-dom";
 import { WalletAPI } from "../api/walletApi";
+import { useStoreOrderMutation } from '../api/storeApi';
+import { useAppSelector, useAppDispatch, reducers } from "../service/dataStore";
+import { useNavigate } from "react-router-dom";
 
 interface Props {
     selections: BookSelection[],
-    submitCallback: (action: string) => void,
-    revokeCallback: (action: string) => void
 }
 /**
- * 
  * OrderDetails
  * 
  * A FunctionComponent that displays the order details based on the selected products
@@ -24,41 +24,92 @@ interface Props {
 
 export const OrderDetails: FunctionComponent<Props> = (props) => {
 
-    let connectButtonText = 'Connect Wallet';
-    let orderButtonText = 'Submit Order';
-    let backButtonText = 'Back';
-    let disconnectButtonText = 'Disconnect Wallet';
+    let defaultConnectButtonText = 'Connect Wallet';
+    let defaultOrderButtonText = 'Submit Order';
+    let defaultBackButtonText = 'Back';
+    let defaultDisconnectButtonText = 'Disconnect Wallet';
 
-    const [ primaryOrderButtonText, setPrimaryButtonText ] = useState<string>(connectButtonText);
-    const [ secondaryOrderButtonText, setSecondaryButtonText ] = useState<string>(backButtonText);
-    const [ account, setAccount ] = useState<string>('');
-    const [ balance, setAccountBalance ] = useState<string>('');
+    const [ primaryOrderButtonText, setPrimaryOrderButtonText ] = useState<string>(defaultConnectButtonText);
+    const [ secondaryOrderButtonText, setSecondaryOrderButtonText ] = useState<string>(defaultBackButtonText);
+    const [ address, setAccountAddress ] = useState<string>('-');
+    const [ balance, setAccountBalance ] = useState<string>('-');
+
+    const selections = useAppSelector(state => state.selections); 
+    const dispatch = useAppDispatch();
+
+    const [ storeOrder ] = useStoreOrderMutation();
+    const navigate = useNavigate();
 
     useEffect(() => {
+        if (selections.length > 0) {
+          localStorage.setItem('selections', JSON.stringify(selections));
+        }
+      }, [selections]);
+    
+      //rehydrate selections from localStorage
+    useEffect(() => {
+      const storedSelections = localStorage.getItem('selections');
 
-        const fetchWalletAccount = async () => {
+      if (storedSelections !== null) {
+        dispatch(reducers.setSelections(JSON.parse(storedSelections))); //Invoke setSelections action to dispatch to store.
+      }
+    }, [dispatch]);
 
-            await WalletAPI.fetchAccountInfo();
-
-            const walletAccountInfo = WalletAPI.getCurrentInfo();
-
-            if (walletAccountInfo.length > 0) {
-                const accountInfo = walletAccountInfo[0];
-                setAccountBalance(accountInfo.balance?.toString());
-
-                if (accountInfo.account !== '') {
-                    setAccount(accountInfo.account.substring(0, 6) + '...' + accountInfo.account.substring(accountInfo.account.length - 5));
-                    setPrimaryButtonText(orderButtonText);
-                    setSecondaryButtonText(disconnectButtonText);
-                }
-            } else {
-                setPrimaryButtonText(connectButtonText);
-                setSecondaryButtonText(backButtonText);
-            }
-        };
+    useEffect(() => {
         fetchWalletAccount();
-        
     });
+
+
+    const onConnectWallet = async (action: string) => {
+
+        if (action === 'Connect Wallet') {
+
+            await WalletAPI.connectWalletAccount();
+  
+        } else if (action === 'Submit Order') {
+          
+          storeOrder(selections)
+              .unwrap()
+              .then((orderId) => { 
+              navigate(`/summary/${orderId.length}`); 
+              })
+              .catch((error) => {
+                console.error("Order submission failed:", error);  
+              });
+        }  
+    };
+    
+    const onDisconnectWallet = async (action: string) => {
+        if (action === 'Back') {
+          navigate('/');
+  
+        } else if (action === 'Disconnect Wallet') {
+  
+          await WalletAPI.disconnectWallet();
+          localStorage.removeItem('selections');
+          dispatch(reducers.resetSelections());
+        }
+    };
+
+
+    const fetchWalletAccount = async () => {
+
+        const res = await WalletAPI.getAccountInfo();
+
+        if (res.length > 0) {
+
+            setAccountAddress(res[0].account.substring(0, 6) + '...' + res[0].account.substring(res[0].account.length - 5));
+            setAccountBalance(res[0].balance?.toString());
+
+            setPrimaryOrderButtonText(defaultOrderButtonText);
+            setSecondaryOrderButtonText(defaultDisconnectButtonText);
+            
+        } else {
+            setPrimaryOrderButtonText(defaultConnectButtonText);
+            setSecondaryOrderButtonText(defaultBackButtonText);
+        }
+    };
+        
 
     return <div className="OrderDetails">
             <div>
@@ -66,7 +117,7 @@ export const OrderDetails: FunctionComponent<Props> = (props) => {
                     <div className="col text-start">
                         <h5 className="text-white mt-3">
                             Account: 
-                            <span className="WalletAccountInfo bg-info text-dark rounded">{account}</span>
+                            <span className="WalletAccountInfo bg-info text-dark rounded">{address}</span>
                             </h5>
                             <h5 className="text-white">
                             Balance: 
@@ -129,14 +180,14 @@ export const OrderDetails: FunctionComponent<Props> = (props) => {
                 </div>
                 <div className="text-center">
                     
-                    <button  className="btn btn-secondary" style={{minWidth: "80px"}} onClick={ () => props.revokeCallback(secondaryOrderButtonText) }> 
+                    <button  className="btn btn-secondary" style={{minWidth: "80px"}} onClick={ () => onDisconnectWallet(secondaryOrderButtonText) }> 
 
                         <NavLink to="/books" style={{color:"white", textDecoration:"none"}}> 
                             { secondaryOrderButtonText } 
                         </NavLink>
                     </button>
                     
-                    <button className="btn btn-primary m-1" onClick={ () => props.submitCallback(primaryOrderButtonText) }> 
+                    <button className="btn btn-primary m-1" onClick={ () => onConnectWallet(primaryOrderButtonText) }> 
                         { primaryOrderButtonText }
                     </button>
                 </div>
