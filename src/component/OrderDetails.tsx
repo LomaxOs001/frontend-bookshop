@@ -40,6 +40,7 @@ export const OrderDetails: FunctionComponent<Props> = (props) => {
     const [ storeOrder ] = useStoreOrderMutation();
     const navigate = useNavigate();
 
+
     useEffect(() => {
         if (selections.length > 0) {
           localStorage.setItem('selections', JSON.stringify(selections));
@@ -116,12 +117,12 @@ export const OrderDetails: FunctionComponent<Props> = (props) => {
                 <div className="bg-primary row">
                     <div className="col text-start">
                         <h5 className="text-white mt-3">
-                            Account: 
+                            Account:  
                             <span className="WalletAccountInfo bg-info text-dark rounded">{address}</span>
                             </h5>
                             <h5 className="text-white">
-                            Balance: 
-                            <span className="WalletAccountInfo bg-info text-dark rounded d-inline-block">{balance}</span>
+                            Balance:  
+                            <span className="WalletAccountInfo bg-info text-dark rounded d-inline-block">${balance}</span>
                         </h5>
                         <style>{`
                             .WalletAccountInfo {
